@@ -4,19 +4,19 @@
 
     <item android:id="@+id/action_fechar"
         android:title="@string/fechar"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/close"
         android:showAsAction="always"/>
 
     <item android:id="@+id/action_settings"
         android:title="@string/action_settings"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/ic_action_settings"
         android:showAsAction="always">
 
         <menu>
 
             <item android:id="@+id/action_registar"
                 android:title="@string/registar"
-                android:icon="@drawable/ic_launcher"
+                android:icon="@drawable/ic_action_save"
                 android:showAsAction="ifRoom|withText" />
 
 

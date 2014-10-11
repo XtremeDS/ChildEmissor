@@ -39,6 +39,7 @@ public class Registo extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registo);
 
@@ -98,7 +99,7 @@ public class Registo extends Activity {
                 jsonObject.accumulate("futsal_futebol", 0);
             }*/
 
-            jsonObject.accumulate("imei", username);
+            jsonObject.accumulate("imei", imei);
             jsonObject.accumulate("username", username);
             jsonObject.accumulate("password", password);
 
@@ -188,7 +189,7 @@ public class Registo extends Activity {
     {
 
         new HttpAsyncTask().execute();
-
+        finish();
     }
 
 }

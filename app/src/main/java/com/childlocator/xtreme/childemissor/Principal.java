@@ -3,6 +3,7 @@ package com.childlocator.xtreme.childemissor;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -47,8 +48,8 @@ public class Principal extends Activity {
     private ProgressDialog dialog;
     TextView txt;
 
-    private double locLat = 40;
-    private double locLong = 45;
+    private double locLat = 0;
+    private double locLong = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,10 +94,20 @@ public class Principal extends Activity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+
+        Intent intent;
+
         switch(item.getItemId()) {
             case R.id.action_registar:
 
+                intent = new Intent(Principal.this, Registo.class);
+                startActivity(intent);
 
+            break;
+
+            case R.id.action_fechar:
+
+                finish();
 
                 break;
 
@@ -219,8 +230,8 @@ public class Principal extends Activity {
                 jsonObject.accumulate("futsal_futebol", 0);
             }*/
 
-            jsonObject.accumulate("CoordLat", coordLat);
-            jsonObject.accumulate("CoordLong", coordLong);
+            jsonObject.accumulate("lat", coordLat);
+            jsonObject.accumulate("lng", coordLong);
 
             json = jsonObject.toString();
 
