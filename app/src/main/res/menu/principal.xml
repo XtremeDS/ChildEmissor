@@ -1,8 +1,26 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".Principal" >
+
+    <item android:id="@+id/action_fechar"
+        android:title="@string/fechar"
+        android:icon="@drawable/ic_launcher"
+        android:showAsAction="always"/>
+
     <item android:id="@+id/action_settings"
         android:title="@string/action_settings"
-        android:orderInCategory="100"
-        android:showAsAction="never" />
+        android:icon="@drawable/ic_launcher"
+        android:showAsAction="always">
+
+        <menu>
+
+            <item android:id="@+id/action_registar"
+                android:title="@string/registar"
+                android:icon="@drawable/ic_launcher"
+                android:showAsAction="ifRoom|withText" />
+
+
+        </menu>
+    </item>
+
 </menu>

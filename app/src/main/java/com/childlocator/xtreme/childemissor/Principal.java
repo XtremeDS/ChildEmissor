@@ -6,6 +6,8 @@ import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -54,6 +56,27 @@ public class Principal extends Activity {
         setContentView(R.layout.activity_principal);
 
         txt = (TextView) findViewById(R.id.txtCoord);
+        TextView txtGPS = (TextView) findViewById(R.id.txtGPS);
+        TextView txtInternet = (TextView) findViewById(R.id.txtInternet);
+
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+            txtGPS.setText("GPS ativo");
+        }else{
+            txtGPS.setText("GPS inativo");
+        }
+
+        ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+        if (mWifi.isConnected()) {
+            txtInternet.setText("Está ligado à internet");
+        }
+        else
+        {
+            txtInternet.setText("Não está ligado à internet");
+        }
 
     }
 
@@ -70,9 +93,18 @@ public class Principal extends Activity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+        switch(item.getItemId()) {
+            case R.id.action_registar:
+
+
+
+                break;
+
+            //case R.id.action_webservice:
+
+            //Mais código
+
+            //break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -97,7 +129,7 @@ public class Principal extends Activity {
                 txt.setText("");
                 dialog = ProgressDialog.show(Principal.this, "", "Loading. Please wait...", true);
 
-                locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
                 LocationListener locationListener = new LocationListener() {
                     @Override
                     public void onLocationChanged(Location location) {
@@ -255,7 +287,7 @@ public class Principal extends Activity {
 
     }
 
-    public void sendImei (View v)
+    public void SendImei (View v)
     {
         int num = 0;
         TelephonyManager mngr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
@@ -301,11 +333,9 @@ public class Principal extends Activity {
 
     }
 
-    public void teste()
+    /*public void onBackPressed()
     {
 
-        txt.setText("Valor: " + locLat++);
-
-    }
+    }*/
 
 }
