@@ -60,13 +60,23 @@ public class Principal extends Activity {
     private double locLat = 0;
     private double locLong = 0;
 
-    private int newtiming = 10000;
+    private String imei;
+
+    private final int lowspeed = 180000;
+    private final int mediumspeed= 120000;
+    private final int highspeed = 60000;
+
+    private int newtiming = lowspeed;
+
     private boolean timing = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_principal);
+
+        TelephonyManager mngr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+        imei = mngr.getDeviceId();
 
         txt = (TextView) findViewById(R.id.txtCoord);
         TextView txtGPS = (TextView) findViewById(R.id.txtGPS);
@@ -186,19 +196,9 @@ public class Principal extends Activity {
                         Toast.makeText(getApplicationContext(), "GPS Desativado", Toast.LENGTH_SHORT).show();
                     }
                 };
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 30000, 0, locationListener);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
             /*}
         });*/
-
-    }
-
-    public void enviarcoord (View v)
-    {
-
-
-        //txt.setText("Teste");
-        new HttpAsyncTask().execute();
-
 
     }
 
@@ -206,17 +206,36 @@ public class Principal extends Activity {
         @Override
         protected String doInBackground(String... urls) {
 
-            return POST("https://divv.no-ip.org:80/storeCoordinates", locLat, locLong);
+            return POST("https://divv.no-ip.org:80/storeCoordinates", locLat, locLong, imei);
 
         }
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(String result) {
             Toast.makeText(getBaseContext(), "Dados enviados!", Toast.LENGTH_LONG).show();
+
+            /*if (result.contains("Dentro"))
+            {
+
+                if (newtiming == lowspeed || newtiming == highspeed)
+                {
+                    newtiming = mediumspeed;
+                    timing = true;
+                }
+
+            }
+            else
+            {
+
+                newtiming = highspeed;
+                timing = true;
+
+            }*/
+
         }
     }
 
-    public static String POST(String url, double coordLat, double coordLong){
+    public static String POST(String url, double coordLat, double coordLong, String imei){
         InputStream inputStream = null;
         String result = "";
         try {
@@ -246,6 +265,7 @@ public class Principal extends Activity {
 
             jsonObject.accumulate("lat", coordLat);
             jsonObject.accumulate("lng", coordLong);
+            jsonObject.accumulate("imei", imei);
 
             json = jsonObject.toString();
 
@@ -363,9 +383,7 @@ public class Principal extends Activity {
                     @Override
                     public void run() {
 
-                        //buscarcoord();
 
-                        new HttpAsyncTask().execute();
 
                         if (timing)
                         {
@@ -373,6 +391,11 @@ public class Principal extends Activity {
                             //System.out.println("Acabou");
                             timing=false;
                             temporizador(newtiming);
+                        }
+                        else
+                        {
+                            buscarcoord();
+                            new HttpAsyncTask().execute();
                         }
 
                     }
