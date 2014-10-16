@@ -38,6 +38,8 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -49,6 +51,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.security.KeyStore;
 import java.text.Normalizer;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -59,18 +65,22 @@ public class Principal extends Activity {
     private ProgressDialog dialog;
     TextView txt;
 
-    private double locLat = 0;
-    private double locLong = 0;
+    private static List<Coordenada> lstCoord = new ArrayList<Coordenada>();
+
+    private double locLat = 15;
+    private double locLong = 15;
 
     private String imei;
 
-    private final int lowspeed = 60000;
-    private final int mediumspeed= 60000;
-    private final int highspeed = 60000;
+    private final int lowspeed = 5000;
+    private final int mediumspeed= 5000;
+    private final int highspeed = 5000;
 
     private int newtiming = lowspeed;
 
     private int arranque=0;
+
+    private NetworkInfo mWifi;
 
     private boolean timing = false;
 
@@ -95,7 +105,7 @@ public class Principal extends Activity {
         }
 
         ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
         if (mWifi.isConnected()) {
             txtInternet.setText("Está ligado à internet");
@@ -173,12 +183,9 @@ public class Principal extends Activity {
                         /*etLatGPS.append("" + location.getLatitude());
                         etLongiGPS.append("" + location.getLongitude());*/
 
+                        Coordenada coord = new Coordenada(location.getLatitude(), location.getLongitude(), String.valueOf(System.currentTimeMillis() / 1000L));
 
-
-                        locLat = location.getLatitude();
-                        locLong = location.getLongitude();
-
-
+                        lstCoord.add(coord);
 
                         txt.setText("Coordenada: " + location.getLatitude() + " , " + location.getLongitude());
 
@@ -239,6 +246,11 @@ public class Principal extends Activity {
                 newtiming = highspeed;
                 timing = true;
 
+            }
+
+            if (result.contains("Success"))
+            {
+                lstCoord.clear();
             }*/
 
         }
@@ -247,6 +259,8 @@ public class Principal extends Activity {
     public static String POST(String url, double coordLat, double coordLong, String imei){
         InputStream inputStream = null;
         String result = "";
+        int cont=0;
+
         try {
 
             // 1. create HttpClient
@@ -272,9 +286,31 @@ public class Principal extends Activity {
                 jsonObject.accumulate("futsal_futebol", 0);
             }*/
 
-            jsonObject.accumulate("lat", coordLat);
-            jsonObject.accumulate("lng", coordLong);
+            /*jsonObject.accumulate("lat", coordLat);
+            jsonObject.accumulate("lng", coordLong);*/
             jsonObject.accumulate("imei", imei);
+
+
+            JSONArray jsonArray = new JSONArray();
+            JSONObject arrayCoord = new JSONObject();
+            
+            for (Coordenada coord: lstCoord)
+            {
+                JSONArray subjsonArray = new JSONArray();
+                JSONObject subarrayCoord = new JSONObject();
+                
+                subarrayCoord.put("lat", coord.getLat());
+                subarrayCoord.put("lng", coord.getLng());
+                subarrayCoord.put("timestamp", coord.getTimestamp());
+
+                subjsonArray.put(subarrayCoord);
+
+                jsonArray.put( subjsonArray);
+
+                cont++;
+            }
+
+            jsonObject.put("arrayCoord", jsonArray);
 
             json = jsonObject.toString();
 
@@ -421,6 +457,16 @@ public class Principal extends Activity {
                         else
                         {
                             buscarcoord();
+
+                            /*SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                            String currentTimeStamp = dateFormat.format(new Date()); // Find todays date
+
+
+                            Coordenada coord = new Coordenada(++locLat, ++locLong, String.valueOf(System.currentTimeMillis() / 1000L));
+
+                            lstCoord.add(coord);*/
+
+                            //txt.setText("Coordenada: " + location.getLatitude() + " , " + location.getLongitude());
                             new HttpAsyncTask().execute();
 
                             arranque++;
