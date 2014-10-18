@@ -233,7 +233,7 @@ public class Principal extends Activity {
 
             System.out.println("Resultado: " + result);
 
-            if (result.contains("Dentro"))
+            if (result.contains("dentro"))
             {
 
                 if (newtiming == lowspeed || newtiming == highspeed)
@@ -251,11 +251,6 @@ public class Principal extends Activity {
 
             }
 
-            if (result.contains("Success"))
-            {
-                lstCoord.clear();
-            }
-
         }
     }
 
@@ -269,7 +264,6 @@ public class Principal extends Activity {
             // 1. create HttpClient
             HttpClient httpclient = getNewHttpClient();
 
-
             // 2. make POST request to the given URL
             HttpPost httpPost = new HttpPost(url);
 
@@ -277,8 +271,6 @@ public class Principal extends Activity {
 
             // 3. build jsonObject
             JSONObject jsonObject = new JSONObject();
-
-
 
             /*if (vistoria.getTipoVistoria().contains("Futebol"))
             {
@@ -291,7 +283,6 @@ public class Principal extends Activity {
 
             /*jsonObject.accumulate("lat", coordLat);
             jsonObject.accumulate("lng", coordLong);*/
-
 
             TelephonyManager mngr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
             //txt.setText("Imei: " + mngr.getDeviceId());
@@ -373,6 +364,15 @@ public class Principal extends Activity {
 
             // 9. receive response as inputStream
             inputStream = httpResponse.getEntity().getContent();
+
+            int statusint = httpResponse.getStatusLine().getStatusCode();
+
+            if (statusint == 200)
+            {
+
+                lstCoord.clear();
+
+            }
 
             // 10. convert inputstream to string
             if(inputStream != null)

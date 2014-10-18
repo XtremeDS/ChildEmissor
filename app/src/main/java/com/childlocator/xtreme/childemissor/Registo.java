@@ -177,7 +177,7 @@ public class Registo extends Activity {
             jsonObject.accumulate("username", username);
             jsonObject.accumulate("password", password);
             jsonObject.accumulate("timestamp", currentTimeStamp);
-            jsonObject.accumulate("telemovel", Build.MANUFACTURER + " " + Build.MODEL);
+            jsonObject.accumulate("model", Build.MANUFACTURER + " " + Build.MODEL);
 
             json = jsonObject.toString();
 
