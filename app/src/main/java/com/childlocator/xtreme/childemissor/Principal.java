@@ -46,10 +46,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.security.KeyStore;
-import java.text.DateFormat;
 import java.text.Normalizer;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -62,6 +59,9 @@ public class Principal extends Activity {
 
     private double locLat = 0;
     private double locLong = 0;
+
+    private int newtiming = 10000;
+    private boolean timing = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -318,45 +318,9 @@ public class Principal extends Activity {
         TelephonyManager mngr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
         txt.setText("Imei: " + mngr.getDeviceId());
 
-
-
-        Timer mTimer = new Timer();
-        mTimer.scheduleAtFixedRate(new TimerTask() {
-        @Override
-        public void run() {
-            runOnUiThread(new Runnable() {
-
-                @Override
-                public void run() {
-
-                    //buscarcoord();
-
-                    new HttpAsyncTask().execute();
-                }
-            });
-
-            /*try {
-                System.out.println("Teste");
-                File myFile = new File(Environment.getExternalStorageDirectory() + "/json.txt");
-                System.out.println(Environment.getExternalStorageDirectory() + "/json.txt");
-                myFile.createNewFile();
-                FileOutputStream fOut = new FileOutputStream(myFile);
-                OutputStreamWriter myOutWriter =
-                        new OutputStreamWriter(fOut);
-                myOutWriter.append(String.valueOf(locLat++));
-                myOutWriter.close();
-                fOut.close();
-
-            } catch (Exception e) {
-                System.out.println("Teste2");
-            }*/
-
-
+        temporizador(newtiming);
 
         }
-    }, 1, 60000);
-
-    }
 
     /*public void onBackPressed()
     {
@@ -385,6 +349,66 @@ public class Principal extends Activity {
         } catch (Exception e) {
             return new DefaultHttpClient();
         }
+    }
+
+    private void temporizador (int internaltimming)
+    {
+
+        final Timer mTimer = new Timer();
+        mTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+
+                    @Override
+                    public void run() {
+
+                        //buscarcoord();
+
+                        new HttpAsyncTask().execute();
+
+                        if (timing)
+                        {
+                            mTimer.cancel();
+                            //System.out.println("Acabou");
+                            timing=false;
+                            temporizador(newtiming);
+                        }
+
+                    }
+                });
+
+            /*try {
+                System.out.println("Teste");
+                File myFile = new File(Environment.getExternalStorageDirectory() + "/json.txt");
+                System.out.println(Environment.getExternalStorageDirectory() + "/json.txt");
+                myFile.createNewFile();
+                FileOutputStream fOut = new FileOutputStream(myFile);
+                OutputStreamWriter myOutWriter =
+                        new OutputStreamWriter(fOut);
+                myOutWriter.append(String.valueOf(locLat++));
+                myOutWriter.close();
+                fOut.close();
+
+            } catch (Exception e) {
+                System.out.println("Teste2");
+            }*/
+
+
+
+            }
+        }, 1, internaltimming);
+
+
+
+    }
+
+    public void changeTiming(View v)
+    {
+
+        timing = true;
+        newtiming = 5000;
+
     }
 
 }

@@ -35,9 +35,10 @@
         android:layout_height="wrap_content"
         android:text="Buscar e enviar coordenadas"
         android:id="@+id/btnEnviar"
+        android:onClick="SendImei"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:onClick="SendImei"/>
+        android:layout_marginBottom="44dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -56,4 +57,13 @@
         android:id="@+id/txtGPS"
         android:layout_above="@+id/txtInternet"
         android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Change timing"
+        android:id="@+id/button2"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:onClick="changeTiming"/>
 </RelativeLayout>

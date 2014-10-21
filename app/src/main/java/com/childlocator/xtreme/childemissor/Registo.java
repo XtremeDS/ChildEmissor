@@ -66,6 +66,11 @@ public class Registo extends Activity {
         txtImei.setText("Imei: " + mngr.getDeviceId());
         imei = mngr.getDeviceId();
 
+        if (imei == null)
+        {
+            imei ="Sem IMEI";
+        }
+
     }
 
 
@@ -165,18 +170,6 @@ public class Registo extends Activity {
 
             System.out.println("ValorJSON: " + result);
 
-            if (result.contains("Error"))
-            {
-
-                fin=false;
-
-            }
-            else
-            {
-                fin=true;
-                System.out.println("Teste");
-            }
-
         } catch (Exception e) {
             Log.d("InputStream", e.getLocalizedMessage());
         }
@@ -211,113 +204,29 @@ public class Registo extends Activity {
         @Override
         protected void onPostExecute(String result) {
             Toast.makeText(getBaseContext(), "Dados enviados!", Toast.LENGTH_LONG).show();
+
+            if (!result.contains("Error"))
+            {
+
+                finish();
+
+            }
+            else
+            {
+                txtError.setVisibility(View.VISIBLE);
+            }
+
+
         }
     }
 
     public void RegistarImei( View v)
     {
 
-        String url = "https://divv.no-ip.org:80/storeCoordinates";
 
-
-
-        EditText etUsername = (EditText) findViewById(R.id.etUsername);
-        EditText etPassword = (EditText) findViewById(R.id.etPassword);
-
-        InputStream inputStream = null;
-        String result = "";
-        try {
-
-            // 1. create HttpClient
-            HttpClient httpclient = getNewHttpClient();
-
-            // 2. make POST request to the given URL
-            HttpPost httpPost = new HttpPost(url);
-
-            String json = "";
-
-            // 3. build jsonObject
-            JSONObject jsonObject = new JSONObject();
-
-            /*if (vistoria.getTipoVistoria().contains("Futebol"))
-            {
-                jsonObject.accumulate("futsal_futebol", 1);
-            }
-            else
-            {
-                jsonObject.accumulate("futsal_futebol", 0);
-            }*/
-
-            jsonObject.accumulate("imei", imei);
-            jsonObject.accumulate("username", etUsername.getText().toString());
-            jsonObject.accumulate("password", etPassword.getText().toString());
-            jsonObject.accumulate("telemovel", Build.MANUFACTURER + " " + Build.MODEL);
-
-            json = jsonObject.toString();
-
-            //System.out.println("Valores: " + coordLat + " , " + coordLong);
-
-            try {
-                System.out.println("Teste");
-                File myFile = new File(Environment.getExternalStorageDirectory() + "/jsonRegisto.txt");
-                System.out.println(Environment.getExternalStorageDirectory() + "/jsonRegisto.txt");
-                myFile.createNewFile();
-                FileOutputStream fOut = new FileOutputStream(myFile);
-                OutputStreamWriter myOutWriter =
-                        new OutputStreamWriter(fOut);
-                myOutWriter.append(json);
-                myOutWriter.close();
-                fOut.close();
-
-            } catch (Exception e) {
-                System.out.println("Teste2");
-            }
-
-            json = Normalizer.normalize(json, Normalizer.Form.NFD)
-                    .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
-
-            // 5. set json to StringEntity
-            StringEntity se = new StringEntity(json);
-
-            // 6. set httpPost Entity
-            httpPost.setEntity(se);
-
-            // 7. Set some headers to inform server about the type of the content
-            httpPost.setHeader("Accept", "application/json");
-            httpPost.setHeader("Content-type", "application/json");
-
-            // 8. Execute POST request to the given URL
-            HttpResponse httpResponse = httpclient.execute(httpPost);
-
-            // 9. receive response as inputStream
-            inputStream = httpResponse.getEntity().getContent();
-
-            // 10. convert inputstream to string
-            if(inputStream != null)
-                result = convertInputStreamToString(inputStream);
-            else
-                result = "Did not work!";
-
-            System.out.println("ValorJSON: " + result);
-
-            if (result.contains("Error"))
-            {
-
-                fin=false;
-
-            }
-            else
-            {
-                fin=true;
-                System.out.println("Teste");
-            }
-
-        } catch (Exception e) {
-            Log.d("InputStream", e.getLocalizedMessage());
-        }
 
         new HttpAsyncTask().execute();
-        try {
+        /*try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -332,7 +241,7 @@ public class Registo extends Activity {
         {
             System.out.println("Teste3");
             txtError.setVisibility(View.VISIBLE);
-        }
+        }*/
 
     }
 
