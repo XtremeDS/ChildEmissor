@@ -62,11 +62,13 @@ public class Principal extends Activity {
 
     private String imei;
 
-    private final int lowspeed = 180000;
-    private final int mediumspeed= 120000;
-    private final int highspeed = 60000;
+    private final int lowspeed = 15000;
+    private final int mediumspeed= 10000;
+    private final int highspeed = 5000;
 
     private int newtiming = lowspeed;
+
+    private int arranque=0;
 
     private boolean timing = false;
 
@@ -394,8 +396,19 @@ public class Principal extends Activity {
                         }
                         else
                         {
-                            buscarcoord();
+                            //buscarcoord();
                             new HttpAsyncTask().execute();
+
+                            arranque++;
+                            if (arranque == 1)
+                            {
+
+                                newtiming = mediumspeed;
+                                timing = true;
+
+
+                            }
+
                         }
 
                     }
@@ -418,11 +431,8 @@ public class Principal extends Activity {
             }*/
 
 
-
             }
         }, 1, internaltimming);
-
-
 
     }
 
