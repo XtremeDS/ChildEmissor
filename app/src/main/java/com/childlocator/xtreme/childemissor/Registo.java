@@ -2,6 +2,8 @@ package com.childlocator.xtreme.childemissor;
 
 import android.app.Activity;
 import android.content.Context;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,6 +45,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.security.KeyStore;
 import java.text.Normalizer;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 public class Registo extends Activity {
@@ -50,6 +55,8 @@ public class Registo extends Activity {
     private String imei;
     private static TextView txtError;
     private static boolean fin;
+
+    private Button butRegistar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,12 +70,23 @@ public class Registo extends Activity {
 
         int num = 0;
         TelephonyManager mngr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-        txtImei.setText("Imei: " + mngr.getDeviceId());
-        imei = mngr.getDeviceId();
 
-        if (imei == null)
+
+        if (mngr.getDeviceId() == null)
         {
-            imei ="Sem IMEI";
+            WifiManager manager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+            WifiInfo info = manager.getConnectionInfo();
+            imei = info.getMacAddress();
+
+            txtImei.setText("Mac Adress: " + imei);
+
+        }
+        else
+        {
+
+            txtImei.setText("Imei: " + mngr.getDeviceId());
+            imei = mngr.getDeviceId();
+
         }
 
     }
@@ -118,9 +136,15 @@ public class Registo extends Activity {
                 jsonObject.accumulate("futsal_futebol", 0);
             }*/
 
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String currentTimeStamp = dateFormat.format(new Date()); // Find todays date
+
+            System.out.println("Timestamp: " + currentTimeStamp);
+
             jsonObject.accumulate("imei", imei);
             jsonObject.accumulate("username", username);
             jsonObject.accumulate("password", password);
+            jsonObject.accumulate("timestamp", currentTimeStamp);
             jsonObject.accumulate("telemovel", Build.MANUFACTURER + " " + Build.MODEL);
 
             json = jsonObject.toString();

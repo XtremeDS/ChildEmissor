@@ -9,6 +9,8 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -343,7 +345,24 @@ public class Principal extends Activity {
     {
         int num = 0;
         TelephonyManager mngr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-        txt.setText("Imei: " + mngr.getDeviceId());
+        //txt.setText("Imei: " + mngr.getDeviceId());
+
+        if (mngr.getDeviceId() == null)
+        {
+            WifiManager manager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+            WifiInfo info = manager.getConnectionInfo();
+            imei = info.getMacAddress();
+
+            txt.setText("Mac Adress: " + imei);
+
+        }
+        else
+        {
+
+            txt.setText("Imei: " + mngr.getDeviceId());
+            imei = mngr.getDeviceId();
+
+        }
 
         temporizador(newtiming);
 
