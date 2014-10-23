@@ -62,9 +62,9 @@ public class Principal extends Activity {
 
     private String imei;
 
-    private final int lowspeed = 15000;
-    private final int mediumspeed= 10000;
-    private final int highspeed = 5000;
+    private final int lowspeed = 60000;
+    private final int mediumspeed= 60000;
+    private final int highspeed = 60000;
 
     private int newtiming = lowspeed;
 
@@ -171,6 +171,8 @@ public class Principal extends Activity {
                         /*etLatGPS.append("" + location.getLatitude());
                         etLongiGPS.append("" + location.getLongitude());*/
 
+
+
                         locLat = location.getLatitude();
                         locLong = location.getLongitude();
 
@@ -181,6 +183,9 @@ public class Principal extends Activity {
                         Principal.this.locationManager.removeUpdates(this);
                         //btnGPS.setEnabled(true);
                         dialog.dismiss();
+
+
+
                     }
 
                     @Override
@@ -396,7 +401,7 @@ public class Principal extends Activity {
                         }
                         else
                         {
-                            //buscarcoord();
+                            buscarcoord();
                             new HttpAsyncTask().execute();
 
                             arranque++;
