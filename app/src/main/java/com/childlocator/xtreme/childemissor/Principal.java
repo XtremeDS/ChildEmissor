@@ -71,10 +71,11 @@ public class Principal extends Activity {
     private double locLong = 15;
 
     private String imei;
+    private String mac;
 
-    private final int lowspeed = 5000;
-    private final int mediumspeed= 5000;
-    private final int highspeed = 5000;
+    private final int lowspeed = 60000;
+    private final int mediumspeed= 60000;
+    private final int highspeed = 60000;
 
     private int newtiming = lowspeed;
 
@@ -222,7 +223,7 @@ public class Principal extends Activity {
         @Override
         protected String doInBackground(String... urls) {
 
-            return POST("https://divv.no-ip.org:80/storeCoordinates", locLat, locLong, imei);
+            return POST("https://divv.no-ip.org/storeCoordinates", locLat, locLong, imei);
 
         }
         // onPostExecute displays the results of the AsyncTask.
@@ -230,7 +231,9 @@ public class Principal extends Activity {
         protected void onPostExecute(String result) {
             Toast.makeText(getBaseContext(), "Dados enviados!", Toast.LENGTH_LONG).show();
 
-            /*if (result.contains("Dentro"))
+            System.out.println("Resultado: " + result);
+
+            if (result.contains("Dentro"))
             {
 
                 if (newtiming == lowspeed || newtiming == highspeed)
@@ -251,12 +254,12 @@ public class Principal extends Activity {
             if (result.contains("Success"))
             {
                 lstCoord.clear();
-            }*/
+            }
 
         }
     }
 
-    public static String POST(String url, double coordLat, double coordLong, String imei){
+    public String POST(String url, double coordLat, double coordLong, String imei){
         InputStream inputStream = null;
         String result = "";
         int cont=0;
@@ -288,7 +291,27 @@ public class Principal extends Activity {
 
             /*jsonObject.accumulate("lat", coordLat);
             jsonObject.accumulate("lng", coordLong);*/
-            jsonObject.accumulate("imei", imei);
+
+
+            TelephonyManager mngr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+            //txt.setText("Imei: " + mngr.getDeviceId());
+
+            if (mngr.getDeviceId() == null)
+            {
+
+                WifiManager manager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+                WifiInfo info = manager.getConnectionInfo();
+
+                jsonObject.accumulate("mac", info.getMacAddress());
+
+            }
+            else
+            {
+
+                jsonObject.accumulate("imei", mngr.getDeviceId());
+                imei = mngr.getDeviceId();
+
+            }
 
 
             JSONArray jsonArray = new JSONArray();
@@ -303,9 +326,9 @@ public class Principal extends Activity {
                 subarrayCoord.put("lng", coord.getLng());
                 subarrayCoord.put("timestamp", coord.getTimestamp());
 
-                subjsonArray.put(subarrayCoord);
+                //subjsonArray.put(subarrayCoord);
 
-                jsonArray.put( subjsonArray);
+                jsonArray.put(subarrayCoord);
 
                 cont++;
             }
@@ -389,7 +412,7 @@ public class Principal extends Activity {
             WifiInfo info = manager.getConnectionInfo();
             imei = info.getMacAddress();
 
-            txt.setText("Mac Adress: " + imei);
+            txt.setText("Mac Adress: " + mac);
 
         }
         else

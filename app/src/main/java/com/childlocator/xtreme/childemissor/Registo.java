@@ -111,6 +111,38 @@ public class Registo extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    private class HttpAsyncTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... urls) {
+
+            EditText etUsername = (EditText) findViewById(R.id.etUsername);
+            EditText etPassword = (EditText) findViewById(R.id.etPassword);
+
+            return POST("https://divv.no-ip.org/assignImei", etUsername.getText().toString(), etPassword.getText().toString(), imei);
+
+        }
+        // onPostExecute displays the results of the AsyncTask.
+        @Override
+        protected void onPostExecute(String result) {
+            Toast.makeText(getBaseContext(), "Dados enviados!", Toast.LENGTH_LONG).show();
+
+            System.out.println("Resultado: " + result);
+
+            if (!result.contains("Bad username"))
+            {
+
+                finish();
+
+            }
+            else
+            {
+                txtError.setVisibility(View.VISIBLE);
+            }
+
+
+        }
+    }
+
     public static String POST(String url, String username, String password, String imei){
         InputStream inputStream = null;
         String result = "";
@@ -214,35 +246,7 @@ public class Registo extends Activity {
 
     }
 
-    private class HttpAsyncTask extends AsyncTask<String, Void, String> {
-        @Override
-        protected String doInBackground(String... urls) {
 
-            EditText etUsername = (EditText) findViewById(R.id.etUsername);
-            EditText etPassword = (EditText) findViewById(R.id.etPassword);
-
-            return POST("https://divv.no-ip.org:80/storeCoordinates", etUsername.getText().toString(), etPassword.getText().toString(), imei);
-
-        }
-        // onPostExecute displays the results of the AsyncTask.
-        @Override
-        protected void onPostExecute(String result) {
-            Toast.makeText(getBaseContext(), "Dados enviados!", Toast.LENGTH_LONG).show();
-
-            if (!result.contains("Error"))
-            {
-
-                finish();
-
-            }
-            else
-            {
-                txtError.setVisibility(View.VISIBLE);
-            }
-
-
-        }
-    }
 
     public void RegistarImei( View v)
     {
