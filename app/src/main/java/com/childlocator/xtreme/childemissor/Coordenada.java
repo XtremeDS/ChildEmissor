@@ -8,13 +8,15 @@ public class Coordenada {
     public double lat;
     public double lng;
     public String timestamp;
+    public float speed;
 
-    public Coordenada (double coordLat, double coordLng, String coordTimestamp)
+    public Coordenada (double coordLat, double coordLng, String coordTimestamp, float spd)
     {
 
         lat = coordLat;
         lng = coordLng;
         timestamp = coordTimestamp;
+        speed = spd;
 
     }
 
@@ -40,5 +42,13 @@ public class Coordenada {
 
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public float getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(float speed) {
+        this.speed = speed;
     }
 }

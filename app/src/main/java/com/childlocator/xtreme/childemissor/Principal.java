@@ -90,6 +90,8 @@ public class Principal extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_principal);
 
+        System.out.println("Velocidade: Low");
+
         TelephonyManager mngr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
         imei = mngr.getDeviceId();
 
@@ -184,11 +186,11 @@ public class Principal extends Activity {
                         /*etLatGPS.append("" + location.getLatitude());
                         etLongiGPS.append("" + location.getLongitude());*/
 
-                        Coordenada coord = new Coordenada(location.getLatitude(), location.getLongitude(), String.valueOf(System.currentTimeMillis() / 1000L));
+                        Coordenada coord = new Coordenada(location.getLatitude(), location.getLongitude(), String.valueOf(System.currentTimeMillis() / 1000L), location.getSpeed());
 
                         lstCoord.add(coord);
 
-                        txt.setText("Coordenada: " + location.getLatitude() + " , " + location.getLongitude());
+                        txt.setText("Coordenada: " + location.getLatitude() + " , " + location.getLongitude() + " , Velocidade: " + location.getSpeed());
 
                         Principal.this.locationManager.removeUpdates(this);
                         //btnGPS.setEnabled(true);
@@ -238,6 +240,9 @@ public class Principal extends Activity {
 
                 if (newtiming == lowspeed || newtiming == highspeed)
                 {
+
+                    System.out.println("Velocidade: Medium");
+
                     newtiming = mediumspeed;
                     timing = true;
                 }
@@ -246,6 +251,7 @@ public class Principal extends Activity {
             else
             {
 
+                System.out.println("Velocidade: High");
                 newtiming = highspeed;
                 timing = true;
 
@@ -316,6 +322,7 @@ public class Principal extends Activity {
                 subarrayCoord.put("lat", coord.getLat());
                 subarrayCoord.put("lng", coord.getLng());
                 subarrayCoord.put("timestamp", coord.getTimestamp());
+                subarrayCoord.put("speed", String.valueOf(coord.getSpeed()));
 
                 //subjsonArray.put(subarrayCoord);
 
