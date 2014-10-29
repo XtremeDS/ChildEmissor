@@ -63,18 +63,12 @@ public class Principal extends Activity {
 
     private LocationManager locationManager;
     private ProgressDialog dialog;
-    TextView txt;
+    //TextView txt;
 
     private static List<Coordenada> lstCoord = new ArrayList<Coordenada>();
 
-    private double locLat = 15;
-    private double locLong = 15;
-
-    private String imei;
-    private String mac;
-
-    private final int lowspeed = 60000;
-    private final int mediumspeed= 60000;
+    private final int lowspeed = 180000;
+    private final int mediumspeed= 120000;
     private final int highspeed = 60000;
 
     private int newtiming = lowspeed;
@@ -92,31 +86,28 @@ public class Principal extends Activity {
 
         System.out.println("Velocidade: Low");
 
-        TelephonyManager mngr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-        imei = mngr.getDeviceId();
-
-        txt = (TextView) findViewById(R.id.txtCoord);
         TextView txtGPS = (TextView) findViewById(R.id.txtGPS);
         TextView txtInternet = (TextView) findViewById(R.id.txtInternet);
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-            txtGPS.setText("GPS ativo");
-        }else{
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+        {
+
+            txtGPS.setVisibility(View.VISIBLE);
             txtGPS.setText("GPS inativo");
         }
 
         ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
-        if (mWifi.isConnected()) {
-            txtInternet.setText("Está ligado à internet");
-        }
-        else
-        {
+        if (!mWifi.isConnected()) {
+
+            txtInternet.setVisibility(View.VISIBLE);
             txtInternet.setText("Não está ligado à internet");
         }
+
+        temporizador(newtiming);
 
     }
 
@@ -150,11 +141,6 @@ public class Principal extends Activity {
 
                 break;
 
-            //case R.id.action_webservice:
-
-            //Mais código
-
-            //break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -162,41 +148,17 @@ public class Principal extends Activity {
     public void buscarcoord()
     {
 
-        /*btnGPS = (Button) findViewById(R.id.fut11_btn1GPS);
-        etLatGPS = (EditText) findViewById(R.id.fut11_et1LatGPS);
-        etLongiGPS = (EditText) findViewById(R.id.fut11_et1LongiGPS);*/
-
-        txt = (TextView) findViewById(R.id.txtCoord);
-
-        /*btnGPS.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {*/
-                /*etLatGPS.setText("");
-                etLongiGPS.setText("");
-                dialog = ProgressDialog.show(Principal.this, "", "Loading. Please wait...", true);
-                btnGPS.setEnabled(false);*/
-
-                txt.setText("");
-                dialog = ProgressDialog.show(Principal.this, "", "Loading. Please wait...", true);
-
-
                 LocationListener locationListener = new LocationListener() {
                     @Override
                     public void onLocationChanged(Location location) {
-                        /*etLatGPS.append("" + location.getLatitude());
-                        etLongiGPS.append("" + location.getLongitude());*/
 
                         Coordenada coord = new Coordenada(location.getLatitude(), location.getLongitude(), String.valueOf(System.currentTimeMillis() / 1000L), location.getSpeed());
 
                         lstCoord.add(coord);
 
-                        txt.setText("Coordenada: " + location.getLatitude() + " , " + location.getLongitude() + " , Velocidade: " + location.getSpeed());
+                        System.out.println("Coordenada: " + location.getLatitude() + " , " + location.getLongitude() + " , Velocidade: " + location.getSpeed());
 
                         Principal.this.locationManager.removeUpdates(this);
-                        //btnGPS.setEnabled(true);
-                        dialog.dismiss();
-
-
 
                     }
 
@@ -225,13 +187,13 @@ public class Principal extends Activity {
         @Override
         protected String doInBackground(String... urls) {
 
-            return POST("https://divv.no-ip.org/storeCoordinates", locLat, locLong, imei);
+            return POST("https://divv.no-ip.org/storeCoordinates");
 
         }
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(String result) {
-            Toast.makeText(getBaseContext(), "Dados enviados!", Toast.LENGTH_LONG).show();
+            Toast.makeText(getBaseContext(), "Coordenadas enviadas!", Toast.LENGTH_LONG).show();
 
             System.out.println("Resultado: " + result);
 
@@ -260,7 +222,7 @@ public class Principal extends Activity {
         }
     }
 
-    public String POST(String url, double coordLat, double coordLong, String imei){
+    public String POST(String url){
         InputStream inputStream = null;
         String result = "";
         int cont=0;
@@ -278,20 +240,7 @@ public class Principal extends Activity {
             // 3. build jsonObject
             JSONObject jsonObject = new JSONObject();
 
-            /*if (vistoria.getTipoVistoria().contains("Futebol"))
-            {
-                jsonObject.accumulate("futsal_futebol", 1);
-            }
-            else
-            {
-                jsonObject.accumulate("futsal_futebol", 0);
-            }*/
-
-            /*jsonObject.accumulate("lat", coordLat);
-            jsonObject.accumulate("lng", coordLong);*/
-
             TelephonyManager mngr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-            //txt.setText("Imei: " + mngr.getDeviceId());
 
             if (mngr.getDeviceId() == null)
             {
@@ -306,25 +255,21 @@ public class Principal extends Activity {
             {
 
                 jsonObject.accumulate("imei", mngr.getDeviceId());
-                imei = mngr.getDeviceId();
 
             }
 
 
             JSONArray jsonArray = new JSONArray();
-            JSONObject arrayCoord = new JSONObject();
             
             for (Coordenada coord: lstCoord)
             {
-                JSONArray subjsonArray = new JSONArray();
+
                 JSONObject subarrayCoord = new JSONObject();
                 
                 subarrayCoord.put("lat", coord.getLat());
                 subarrayCoord.put("lng", coord.getLng());
                 subarrayCoord.put("timestamp", coord.getTimestamp());
                 subarrayCoord.put("speed", String.valueOf(coord.getSpeed()));
-
-                //subjsonArray.put(subarrayCoord);
 
                 jsonArray.put(subarrayCoord);
 
@@ -335,10 +280,7 @@ public class Principal extends Activity {
 
             json = jsonObject.toString();
 
-            System.out.println("Valores: " + coordLat + " , " + coordLong);
-
             try {
-                System.out.println("Teste");
                 File myFile = new File(Environment.getExternalStorageDirectory() + "/json.txt");
                 System.out.println(Environment.getExternalStorageDirectory() + "/json.txt");
                 myFile.createNewFile();
@@ -407,37 +349,6 @@ public class Principal extends Activity {
 
     }
 
-    public void SendImei (View v)
-    {
-        int num = 0;
-        TelephonyManager mngr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-        //txt.setText("Imei: " + mngr.getDeviceId());
-
-        if (mngr.getDeviceId() == null)
-        {
-            WifiManager manager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-            WifiInfo info = manager.getConnectionInfo();
-            imei = info.getMacAddress();
-
-            txt.setText("Mac Adress: " + mac);
-
-        }
-        else
-        {
-
-            txt.setText("Imei: " + mngr.getDeviceId());
-            imei = mngr.getDeviceId();
-
-        }
-
-        temporizador(newtiming);
-
-        }
-
-    /*public void onBackPressed()
-    {
-
-    }*/
 
     private static HttpClient getNewHttpClient() {
         try {
@@ -480,32 +391,19 @@ public class Principal extends Activity {
                         if (timing)
                         {
                             mTimer.cancel();
-                            //System.out.println("Acabou");
                             timing=false;
                             temporizador(newtiming);
                         }
                         else
                         {
                             buscarcoord();
-
-                            /*SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                            String currentTimeStamp = dateFormat.format(new Date()); // Find todays date
-
-
-                            Coordenada coord = new Coordenada(++locLat, ++locLong, String.valueOf(System.currentTimeMillis() / 1000L));
-
-                            lstCoord.add(coord);*/
-
-                            //txt.setText("Coordenada: " + location.getLatitude() + " , " + location.getLongitude());
                             new HttpAsyncTask().execute();
 
                             arranque++;
                             if (arranque == 1)
                             {
-
                                 newtiming = mediumspeed;
                                 timing = true;
-
 
                             }
 
@@ -514,33 +412,13 @@ public class Principal extends Activity {
                     }
                 });
 
-            /*try {
-                System.out.println("Teste");
-                File myFile = new File(Environment.getExternalStorageDirectory() + "/json.txt");
-                System.out.println(Environment.getExternalStorageDirectory() + "/json.txt");
-                myFile.createNewFile();
-                FileOutputStream fOut = new FileOutputStream(myFile);
-                OutputStreamWriter myOutWriter =
-                        new OutputStreamWriter(fOut);
-                myOutWriter.append(String.valueOf(locLat++));
-                myOutWriter.close();
-                fOut.close();
-
-            } catch (Exception e) {
-                System.out.println("Teste2");
-            }*/
-
-
             }
         }, 1, internaltimming);
 
     }
 
-    public void changeTiming(View v)
+    public void onBackPressed()
     {
-
-        timing = true;
-        newtiming = 5000;
 
     }
 

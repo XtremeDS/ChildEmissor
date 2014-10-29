@@ -124,7 +124,7 @@ public class Registo extends Activity {
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(String result) {
-            Toast.makeText(getBaseContext(), "Dados enviados!", Toast.LENGTH_LONG).show();
+            Toast.makeText(getBaseContext(), "Registo aceite!", Toast.LENGTH_LONG).show();
 
             System.out.println("Resultado: " + result);
 
@@ -159,15 +159,6 @@ public class Registo extends Activity {
             // 3. build jsonObject
             JSONObject jsonObject = new JSONObject();
 
-            /*if (vistoria.getTipoVistoria().contains("Futebol"))
-            {
-                jsonObject.accumulate("futsal_futebol", 1);
-            }
-            else
-            {
-                jsonObject.accumulate("futsal_futebol", 0);
-            }*/
-
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String currentTimeStamp = dateFormat.format(new Date()); // Find todays date
 
@@ -180,8 +171,6 @@ public class Registo extends Activity {
             jsonObject.accumulate("model", Build.MANUFACTURER + " " + Build.MODEL);
 
             json = jsonObject.toString();
-
-            //System.out.println("Valores: " + coordLat + " , " + coordLong);
 
             try {
                 System.out.println("Teste");
@@ -251,25 +240,7 @@ public class Registo extends Activity {
     public void RegistarImei( View v)
     {
 
-
-
         new HttpAsyncTask().execute();
-        /*try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        if (fin)
-        {
-            System.out.println("Teste2");
-            finish();
-        }
-        else
-        {
-            System.out.println("Teste3");
-            txtError.setVisibility(View.VISIBLE);
-        }*/
 
     }
 
