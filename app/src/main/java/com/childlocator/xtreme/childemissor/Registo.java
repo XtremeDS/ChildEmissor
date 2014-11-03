@@ -143,7 +143,7 @@ public class Registo extends Activity {
         }
     }
 
-    public static String POST(String url, String username, String password, String imei){
+    public String POST(String url, String username, String password, String imei){
         InputStream inputStream = null;
         String result = "";
         try {
@@ -164,7 +164,25 @@ public class Registo extends Activity {
 
             System.out.println("Timestamp: " + currentTimeStamp);
 
-            jsonObject.accumulate("imei", imei);
+
+            TelephonyManager mngr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+
+            if (mngr.getDeviceId() == null)
+            {
+
+                WifiManager manager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+                WifiInfo info = manager.getConnectionInfo();
+
+                jsonObject.accumulate("mac", info.getMacAddress());
+
+            }
+            else
+            {
+
+                jsonObject.accumulate("imei", mngr.getDeviceId());
+
+            }
+
             jsonObject.accumulate("username", username);
             jsonObject.accumulate("password", password);
             jsonObject.accumulate("timestamp", currentTimeStamp);
